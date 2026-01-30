@@ -2,330 +2,379 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyDocs | Secure Documents</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MyDocs -YOUR DOCUMENTS YOUR CONTROL 📑</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #4f46e5; --bg: #f8fafc; --text: #0f172a; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 70px; }
+        :root {
+            --primary: #4f46e5; --p-soft: #e0e7ff; --bg: #f8fafc; --card: #ffffff;
+            --text: #0f172a; --text-light: #64748b; --border: #e2e8f0; --danger: #ef4444; --star: #f59e0b;
+        }
+        body.dark-mode {
+            --bg: #020617; --card: #0f172a; --text: #f1f5f9; --text-light: #94a3b8; --border: #1e293b; --p-soft: #1e1b4b;
+        }
 
-        /* Custom Modals */
-        .modal-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.7);
-            display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(8px);
-        }
-        .modal-box { 
-            background: white; padding: 25px; border-radius: 24px; width: 90%; max-width: 360px; 
-            text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        /* Upload Progress Circle */
-        .progress-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: white;
-            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 11000;
-        }
-        .circle-svg { transform: rotate(-90deg); }
-        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 8; }
-        .circle-bar { fill: none; stroke: var(--primary); stroke-width: 8; stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 0.3s; stroke-linecap: round; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.3s; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
 
-        /* Skeleton */
-        .skeleton { height: 80px; background: #e2e8f0; border-radius: 20px; margin-bottom: 12px; position: relative; overflow: hidden; }
-        .skeleton::after { content: ""; position: absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 1.5s infinite; }
+        /* --- Branding Logos --- */
+        .app-logo { height: 35px; border-radius: 8px; vertical-align: middle; }
+        .modal-logo { height: 100px; margin-bottom: 15px; }
+
+        /* --- Custom Professional Loader --- */
+        #loader {
+            position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg);
+            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;
+        }
+        .loading-bar-wrap { width: 200px; height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; margin-top: 20px; }
+        .loading-bar-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.3s; box-shadow: 0 0 10px var(--primary); }
+
+        /* --- Skeleton Loading --- */
+        .skeleton { height: 85px; background: var(--border); border-radius: 20px; margin-bottom: 12px; position: relative; overflow: hidden; }
+        .skeleton::after { content: ""; position: absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 100% { left: 100%; } }
 
-        /* App UI */
-        header { padding: 15px 20px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; position: sticky; top:0; z-index: 1000; }
-        .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--primary); font-size: 1.2rem; }
-        .logo img { height: 30px; }
+        /* --- Layout --- */
+        header { padding: 15px 20px; background: var(--card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top:0; z-index: 999; }
+        .banner { margin: 15px; background: linear-gradient(135deg, var(--primary), #8b5cf6); border-radius: 24px; padding: 25px; color: white; position: relative; overflow: hidden; }
+        .banner-img { position: absolute; right: -10px; height: 110%; opacity: 0.15; transform: rotate(-10deg); }
 
-        .banner-wrap { padding: 15px; }
-        .banner { 
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); height: 140px; border-radius: 24px; 
-            display: flex; align-items: center; padding: 25px; color: white; position: relative; overflow: hidden;
-        }
-        .banner-img { position: absolute; right: -10px; height: 100%; opacity: 0.15; filter: grayscale(1); }
+        .storage-box { padding: 0 20px; margin-bottom: 15px; }
+        .st-track { height: 6px; background: var(--border); border-radius: 10px; margin-top: 6px; overflow: hidden; }
+        .st-fill { height: 100%; background: var(--primary); width: 0%; transition: 1s ease; }
 
-        .search-wrap { padding: 0 15px; margin-bottom: 15px; }
-        .search-bar { background: white; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 12px 18px; display: flex; align-items: center; gap: 12px; }
-        .search-bar input { border: none; outline: none; width: 100%; font-family: inherit; font-size: 15px; }
+        .chips { display: flex; gap: 8px; padding: 10px 20px; overflow-x: auto; scrollbar-width: none; }
+        .chip { padding: 8px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .file-list { padding: 0 15px; }
-        .file-card { 
-            background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px;
-            display: flex; align-items: center; border: 1px solid #f1f5f9; gap: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-        }
+        /* --- File List --- */
+        .file-list { padding: 10px 15px; }
+        .file-card { background: var(--card); border-radius: 20px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); }
         .f-icon { width: 50px; height: 50px; background: #fee2e2; color: #ef4444; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         .f-info { flex: 1; min-width: 0; }
-        .f-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .f-meta { font-size: 11px; color: #64748b; }
-        .f-actions { display: flex; gap: 8px; }
-        .f-actions i { color: #94a3b8; padding: 8px; cursor: pointer; transition: 0.2s; border-radius: 10px; }
-        .f-actions i:hover { background: #f1f5f9; color: var(--primary); }
+        .f-name { font-weight: 700; font-size: 14px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .f-meta { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+        .f-actions { display: flex; gap: 5px; }
+        .f-actions i { padding: 10px; color: #94a3b8; cursor: pointer; border-radius: 10px; }
+        .f-actions i.active-star { color: var(--star) !important; }
 
-        .fab { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4); cursor: pointer; z-index: 999; }
+        /* --- Modals --- */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(8px); }
+        .modal-box { background: var(--card); padding: 30px 25px; border-radius: 30px; width: 90%; max-width: 380px; text-align: center; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- Auth --- */
+        .auth-card { background: var(--card); padding: 40px 30px; border-radius: 32px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        input, select { width: 100%; padding: 15px; margin: 8px 0; border: 1.5px solid var(--border); border-radius: 16px; background: var(--bg); color: var(--text); outline: none; }
+        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; margin-top: 15px; }
+
+        .fab { position: fixed; bottom: 90px; right: 20px; width: 64px; height: 64px; background: var(--primary); color: white; border-radius: 22px; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4); z-index: 998; }
+        footer { position: fixed; bottom: 0; width: 100%; background: var(--card); padding: 18px; text-align: center; border-top: 1px solid var(--border); font-size: 11px; font-weight: 700; color: #94a3b8; }
         
-        footer { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9; font-size: 11px; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; }
-
-        .btn { padding: 14px 20px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; font-family: inherit; }
-        .btn-p { background: var(--primary); color: white; }
-        .btn-s { background: #f1f5f9; color: #475569; }
-
-        input[type="text"], input[type="password"] { width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 15px; margin: 8px 0; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Upload Progress Overlay -->
-    <div id="uploadOverlay" class="progress-overlay">
-        <div style="position: relative;">
-            <svg class="circle-svg" width="120" height="120">
-                <circle class="circle-bg" cx="60" cy="60" r="50" />
-                <circle id="circleBar" class="circle-bar" cx="60" cy="60" r="50" />
-            </svg>
-            <div id="percentText" style="position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:800; font-size:20px;">0%</div>
+    <!-- Professional Loader Overlay -->
+    <div id="loader" class="loader-overlay">
+        <img src="logo.png" class="modal-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
+        <p id="lMsg" style="font-weight:700; margin-top:10px;">Establishing Connection...</p>
+        <div class="loading-bar-wrap">
+            <div id="lBar" class="loading-bar-fill"></div>
         </div>
-        <p style="margin-top:20px; font-weight:700; color:#475569">Uploading...</p>
+        <h2 id="lPercent" style="margin:10px 0 0">0%</h2>
     </div>
 
-    <!-- Custom Modal -->
-    <div id="modalOverlay" class="modal-overlay">
+    <!-- Modals -->
+    <div id="modal" class="modal-overlay">
         <div class="modal-box">
-            <i id="modalIcon" class="fas fa-info-circle" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
-            <h3 id="modalTitle" style="margin:0 0 8px 0;">Notice</h3>
-            <p id="modalMsg" style="color:#64748b; font-size:14px; margin-bottom:20px; line-height:1.5"></p>
-            <div id="modalInputArea" class="hidden">
-                <input type="text" id="modalInput">
+            <img src="logo.png" class="app-logo" style="margin-bottom:15px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
+            <h3 id="mTitle" style="margin:0 0 10px 0; font-weight:800;">Notice</h3>
+            <p id="mMsg" style="color:var(--text-light); font-size:14px; margin-bottom:20px;"></p>
+            <div id="mInputArea" class="hidden">
+                <input type="text" id="mInput">
+                <select id="mCat" class="hidden">
+                    <option value="General">General</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Education">Education</option>
+                </select>
             </div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-s" id="btnCancel">Cancel</button>
-                <button class="btn btn-p" id="btnConfirm">Confirm</button>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn-p" style="background:var(--border); color:var(--text); box-shadow:none" onclick="closeM()">Cancel</button>
+                <button class="btn-p" id="mConfirm">Confirm</button>
             </div>
         </div>
     </div>
 
-    <!-- Login Page -->
-    <div id="loginPage" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px;">
-        <img src="logo.png" style="height:100px; margin-bottom:20px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
-        <h1 style="margin:0; font-weight:800;">MyDocs</h1>
-        <p style="color:#64748b; margin-bottom:30px;">Your documents, always with you. 📂✨</p>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="pin" placeholder="4-Digit PIN" maxlength="4">
-        <button class="btn btn-p" onclick="handleLogin()">Login to Vault</button>
+    <!-- Login -->
+    <div id="loginPage" style="height:100vh; display:flex; justify-content:center; align-items:center;">
+        <div class="auth-card">
+            <img src="logo.png" class="modal-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
+            <h2 style="margin:0; font-weight:800;">MyDocs </h2>
+            <input type="email" id="lEmail" placeholder="Email Address">
+            <input type="password" id="lPin" placeholder="4-Digit PIN">
+            <button class="btn-p" onclick="login()">Enter Vault</button>
+            <p style="margin-top:20px; font-size:14px; font-weight:700;">New user? <span style="color:var(--primary); cursor:pointer" onclick="toggleAuth(true)">Register</span></p>
+        </div>
     </div>
 
-    <!-- Main Dashboard -->
+    <!-- Register -->
+    <div id="registerPage" class="auth-card hidden" style="margin: 50px auto;">
+        <img src="YOUR_LOGO_URL" class="modal-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
+        <h2 style="margin:0; font-weight:800;">Create Vault</h2>
+        <input type="text" id="rName" placeholder="Full Name">
+        <input type="email" id="rEmail" placeholder="Email Address">
+        <input type="password" id="rPin" placeholder="Set PIN" maxlength="4">
+        <button class="btn-p" onclick="askOTP()">Verify Email</button>
+        <p style="margin-top:20px; font-size:14px; font-weight:700;">Back to <span style="color:var(--primary); cursor:pointer" onclick="toggleAuth(false)">Login</span></p>
+    </div>
+
+    <!-- Dashboard -->
     <div id="appPage" class="hidden">
         <header>
             <div class="logo">
-                <img src="logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
-                <span>MyDocs</span>
+                <img src="logo.png" class="app-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/338/338046.png'">
+                <span style="font-weight:800; font-size:1.2rem; margin-left:8px; color:var(--primary)">MyDocs</span>
             </div>
-            <i class="fas fa-sign-out-alt" onclick="logout()" style="color:#94a3b8; cursor:pointer"></i>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <i class="fas fa-moon" id="tBtn" onclick="toggleTheme()" style="cursor:pointer; color:var(--text-light)"></i>
+                <i class="fas fa-power-off" onclick="logout()" style="color:var(--danger); cursor:pointer"></i>
+            </div>
         </header>
 
-        <div class="banner-wrap">
-            <div class="banner">
-                <div style="z-index: 1;">
-                    <h2 id="helloUser" style="margin:0; font-weight:800;">Hello!</h2>
-                    <p style="margin:5px 0 0; font-size:13px; opacity:0.9;">Manage your documents securely.</p>
-                </div>
-                <img class="banner-img" src="https://www.gstatic.com/classroom/themes/img_code.jpg">
+        <div class="banner">
+            <div style="z-index: 1;">
+                <h2 id="hello" style="margin:0; font-weight:800;">Hello!</h2>
+                <p id="today" style="margin:5px 0 0; font-size:12px; font-weight:600; opacity:0.9;"></p>
             </div>
+            <img src="https://www.gstatic.com/classroom/themes/img_code.jpg" class="banner-img">
         </div>
 
-        <div class="search-wrap">
-            <div class="search-bar">
-                <i class="fas fa-search" style="color:#cbd5e1"></i>
-                <input type="text" id="search" placeholder="Search by name..." onkeyup="filterFiles()">
+        <div class="storage-box">
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800;">
+                <span>Storage Indicator</span> <span id="stTxt">0 MB / 100 GB</span>
             </div>
+            <div class="st-track"><div id="stFill" class="st-fill"></div></div>
+        </div>
+
+        <div class="chips">
+            <div class="chip active" onclick="filterCat('All', this)">All Docs</div>
+            <div class="chip" onclick="filterCat('Starred', this)">★ Starred</div>
+            <div class="chip" onclick="filterCat('Work', this)">Work</div>
+            <div class="chip" onclick="filterCat('Personal', this)">Personal</div>
+            <div class="chip" onclick="filterCat('Education', this)">Education</div>
+        </div>
+
+        <div style="padding:0 20px; display:flex; gap:10px;">
+            <input type="text" id="search" placeholder="Search by name..." onkeyup="search()" style="margin:0; flex:1">
+            <select id="sort" onchange="search()" style="margin:0; width:auto; padding:0 10px;">
+                <option value="new">New</option>
+                <option value="name">Name</option>
+                <option value="size">Size</option>
+            </select>
         </div>
 
         <div class="file-list" id="fileList">
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
         </div>
 
         <div class="fab" onclick="document.getElementById('fileInput').click()"><i class="fas fa-plus"></i></div>
-        <input type="file" id="fileInput" class="hidden" accept="application/pdf" onchange="initUpload()">
+        <input type="file" id="fileInput" class="hidden" accept="application/pdf" onchange="handleUpload()">
     </div>
 
-    <footer>
-        CREATED BY SURAJ • Your documents, your control. 📂
-    </footer>
+    <footer>BY SURAJ•  I ❤️  ODISHA</footer>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKytkbybMlZbDliS7MvT73ooxVxSsudUUJTegbXMSJQ_wwRHrSNSNR8J7m1M9zC--i5Q/exec";
-        let userKey = localStorage.getItem("userKey");
-        let allFiles = [];
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxy6NSWIWTE0ByN_G2ewrz_Gnu73Zlg9yFZdiDs-S3euPS3XPCaUtCBbzoTZ4I6K6qA/exec";
+        let userEmail = localStorage.getItem("email"), userName = localStorage.getItem("name"), allFiles = [], currentCat = "All";
 
-        // --- Custom Modal Helper ---
-        const ui = {
-            overlay: document.getElementById('modalOverlay'),
-            title: document.getElementById('modalTitle'),
-            msg: document.getElementById('modalMsg'),
-            inputArea: document.getElementById('modalInputArea'),
-            input: document.getElementById('modalInput'),
-            btnCancel: document.getElementById('btnCancel'),
-            btnConfirm: document.getElementById('btnConfirm'),
-
-            show(title, msg, type = 'alert', onConfirm = null, placeholder = '', icon = 'fa-info-circle') {
-                this.title.innerText = title;
-                this.msg.innerText = msg;
-                document.getElementById('modalIcon').className = `fas ${icon}`;
-                this.inputArea.classList.add('hidden');
-                this.btnCancel.classList.toggle('hidden', type === 'alert');
-                this.overlay.style.display = 'flex';
-                if(type === 'prompt') { this.inputArea.classList.remove('hidden'); this.input.placeholder = placeholder; this.input.value = ""; }
-                
-                this.btnConfirm.onclick = () => {
-                    const val = this.input.value;
-                    this.overlay.style.display = 'none';
-                    if(onConfirm) onConfirm(val || true);
-                };
-                this.btnCancel.onclick = () => this.overlay.style.display = 'none';
-            }
+        window.onload = () => {
+            if(localStorage.getItem('theme') === 'dark') toggleTheme(true);
+            document.getElementById('today').innerText = new Date().toDateString();
+            if(userEmail) showDash();
         };
 
-        window.onload = () => { if(userKey) showDash(); };
-
-        function handleLogin() {
-            const u = document.getElementById('username').value.trim();
-            const p = document.getElementById('pin').value.trim();
-            if(u.length < 3 || p.length < 4) return ui.show("Access Denied", "Please enter a valid username and 4-digit PIN.");
-            userKey = `${u.toLowerCase()}@${p}`;
-            localStorage.setItem("userKey", userKey);
-            showDash();
+        function toggleTheme(init) {
+            const isDark = document.body.classList.toggle('dark-mode');
+            if(!init) localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('tBtn').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        function logout() {
-            ui.show("Logout", "Do you really want to sign out?", "confirm", () => {
-                localStorage.clear();
-                location.reload();
-            }, "", "fa-power-off");
+        function toggleAuth(reg) {
+            document.getElementById('loginPage').classList.toggle('hidden', reg);
+            document.getElementById('registerPage').classList.toggle('hidden', !reg);
+        }
+
+        function showM(title, msg, type='alert', onConfirm=null, placeholder='') {
+            document.getElementById('mTitle').innerText = title;
+            document.getElementById('mMsg').innerText = msg;
+            const inputArea = document.getElementById('mInputArea'), input = document.getElementById('mInput'), cat = document.getElementById('mCat');
+            inputArea.classList.toggle('hidden', type !== 'prompt' && type !== 'upload');
+            cat.classList.toggle('hidden', type !== 'upload');
+            input.placeholder = placeholder; input.value = "";
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('mConfirm').onclick = () => {
+                const val = input.value;
+                document.getElementById('modal').style.display = 'none';
+                if(onConfirm) onConfirm(val, cat.value);
+            };
+        }
+        function closeM() { document.getElementById('modal').style.display = 'none'; }
+
+        async function askOTP() {
+            const n = document.getElementById('rName').value, e = document.getElementById('rEmail').value, p = document.getElementById('rPin').value;
+            if(!n || !e || p.length < 4) return showM("Error", "Please fill all fields.");
+            toggleLoad(true, 30, "Sending Secure OTP...");
+            const res = await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({action:"register_request", email:e})});
+            const data = await res.json();
+            toggleLoad(false);
+            if(data.status === "success") {
+                showM("Verification", "Enter 4-digit OTP sent to email", "prompt", (val) => {
+                    if(val == data.otp) finishReg(n, e, p);
+                    else showM("Failed", "Incorrect OTP code.");
+                }, "Enter OTP");
+            } else showM("Error", data.msg);
+        }
+
+        async function finishReg(n, e, p) {
+            toggleLoad(true, 70, "Finalizing Vault...");
+            await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({action:"register_confirm", name:n, email:e, pin:p})});
+            toggleLoad(false);
+            showM("Success", "Account created! Now login.", "alert", () => toggleAuth(false));
+        }
+
+        async function login() {
+            const e = document.getElementById('lEmail').value, p = document.getElementById('lPin').value;
+            toggleLoad(true, 50, "Authenticating...");
+            const res = await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({action:"login", email:e, pin:p})});
+            const data = await res.json();
+            toggleLoad(false);
+            if(data.status === "success") {
+                localStorage.setItem("email", e); localStorage.setItem("name", data.name);
+                userEmail = e; userName = data.name; showDash();
+            } else showM("Error", data.msg);
         }
 
         function showDash() {
             document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('registerPage').classList.add('hidden');
             document.getElementById('appPage').classList.remove('hidden');
-            document.getElementById('helloUser').innerText = "Hello, " + userKey.split('@')[0] + "!";
+            document.getElementById('hello').innerText = "Hello, " + userName + "!";
             loadFiles();
         }
 
         async function loadFiles() {
-            const list = document.getElementById('fileList');
-            list.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
-            try {
-                const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "list", userKey: userKey }) });
-                const data = await res.json();
-                allFiles = data.files || [];
-                render(allFiles);
-            } catch(e) { ui.show("Offline", "Unable to connect. Check your internet."); }
+            const res = await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({action:"list", email:userEmail})});
+            const data = await res.json();
+            allFiles = data.files || [];
+            document.getElementById('stTxt').innerText = data.storageUsed + " MB / 10 GB";
+            document.getElementById('stFill').style.width = Math.min((data.storageUsed / 50) * 100, 100) + "%";
+            search();
         }
 
-        function render(files) {
-            const list = document.getElementById('fileList');
-            list.innerHTML = files.length ? "" : "<p style='text-align:center; padding:40px; color:#94a3b8;'>No documents found.</p>";
-            files.forEach(f => {
-                list.innerHTML += `
+        function renderFiles(list) {
+            const container = document.getElementById('fileList');
+            container.innerHTML = list.length ? "" : "<p style='text-align:center; padding:50px; color:var(--text-light);'>No Documents Found.</p>";
+            list.forEach(f => {
+                container.innerHTML += `
                     <div class="file-card">
                         <div class="f-icon"><i class="fas fa-file-pdf"></i></div>
                         <div class="f-info" onclick="window.open('${f.url}')">
                             <div class="f-name">${f.name}</div>
-                            <div class="f-meta">${f.size} • PDF Document</div>
+                            <div class="f-meta">${f.size} • ${f.date} • ${f.category}</div>
                         </div>
                         <div class="f-actions">
-                            <i class="fas fa-share-alt" onclick="shareFile('${f.url}')"></i>
-                            <i class="fas fa-pen" onclick="renameFile('${f.id}')"></i>
-                            <i class="fas fa-trash-alt" onclick="deleteFile('${f.id}')" style="color:#fca5a5"></i>
+                            <i class="fas fa-star ${f.starred?'active-star':''}" onclick="toggleStar('${f.id}')"></i>
+                            <i class="fas fa-share-alt" onclick="shareDoc('${f.url}')"></i>
+                            <i class="fas fa-trash-alt" style="color:var(--danger)" onclick="delDoc('${f.id}')"></i>
                         </div>
                     </div>`;
             });
         }
 
-        function initUpload() {
+        function handleUpload() {
             const file = document.getElementById('fileInput').files[0];
             if(!file) return;
-            ui.show("File Name", "How would you like to save this PDF?", "prompt", (name) => {
-                if(name) performUpload(file, name);
-            }, "Enter name without .pdf", "fa-file-upload");
+            showM("New Document", "Enter Name & Category", "upload", (name, cat) => {
+                if(name) performUpload(file, name, cat);
+            }, "File Name");
         }
 
-        async function performUpload(file, name) {
-            const over = document.getElementById('uploadOverlay');
-            const bar = document.getElementById('circleBar');
-            const txt = document.getElementById('percentText');
-            over.style.display = 'flex';
-            
-            // Simulated progress for UX
-            let p = 0;
-            let timer = setInterval(() => {
-                if(p < 90) p += Math.random() * 15;
-                drawProgress(p, bar, txt);
-            }, 400);
-
-            const r = new FileReader();
-            r.onload = async (e) => {
-                try {
-                    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ 
-                        action: "upload", userKey: userKey, fileName: name, base64: e.target.result 
-                    })});
-                    clearInterval(timer);
-                    drawProgress(100, bar, txt);
-                    setTimeout(() => {
-                        over.style.display = 'none';
-                        ui.show("Success", "Your documents, your control. 📂.", "alert", () => loadFiles(), "", "fa-check-circle");
-                    }, 600);
-                } catch(err) {
-                    over.style.display = 'none';
-                    ui.show("Failed", "Something went wrong during upload.");
-                }
+        async function performUpload(file, name, cat) {
+            toggleLoad(true, 10, "Reading File...");
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                toggleLoad(true, 50, "Uploading to Drive...");
+                await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({
+                    action:"upload", email:userEmail, fileName:name, category:cat, base64:e.target.result
+                })});
+                toggleLoad(true, 100, "Success!");
+                setTimeout(() => { toggleLoad(false); loadFiles(); }, 600);
             };
-            r.readAsDataURL(file);
+            reader.readAsDataURL(file);
         }
 
-        function drawProgress(p, bar, txt) {
-            if(p > 100) p = 100;
-            const offset = 314 - (p / 100 * 314);
-            bar.style.strokeDashoffset = offset;
-            txt.innerText = Math.round(p) + "%";
+        function shareDoc(url) {
+            navigator.clipboard.writeText(url);
+            showM("Link Copied", "Shareable link copied to clipboard.", "alert");
         }
 
-        function shareFile(url) {
-            ui.show("Share Link", "Copy the link below to share your document:", "prompt", (val) => {
-                navigator.clipboard.writeText(url);
-                ui.show("Copied", "Link copied to clipboard!");
-            }, "", "fa-link");
-            document.getElementById('modalInput').value = url;
+        async function toggleStar(id) {
+            await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({action:"toggle_star", email:userEmail, fileId:id})});
+            loadFiles();
         }
 
-        function deleteFile(id) {
-            ui.show("Delete PDF", "Are you sure? This cannot be undone.", "confirm", async () => {
-                await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "delete", userKey: userKey, fileId: id }) });
-                loadFiles();
-            }, "", "fa-exclamation-triangle");
+        function delDoc(id) {
+            showM("Delete", "This will move file to trash. Continue?", "confirm", async () => {
+                toggleLoad(true, 80, "Deleting...");
+                await fetch(SCRIPT_URL, {method:"POST", body:JSON.stringify({action:"delete", email:userEmail, fileId:id})});
+                toggleLoad(false); loadFiles();
+            });
         }
 
-        function renameFile(id) {
-            ui.show("Rename", "Enter a new name for this file:", "prompt", async (name) => {
-                if(name) {
-                    await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "rename", userKey: userKey, fileId: id, newName: name }) });
-                    loadFiles();
-                }
-            }, "New name...");
+        function filterCat(cat, el) {
+            currentCat = cat;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            search();
         }
 
-        function filterFiles() {
+        function search() {
+            let list = [...allFiles];
             const q = document.getElementById('search').value.toLowerCase();
-            render(allFiles.filter(f => f.name.toLowerCase().includes(q)));
+            const sort = document.getElementById('sort').value;
+            if(currentCat === "Starred") list = list.filter(f => f.starred);
+            else if(currentCat !== "All") list = list.filter(f => f.category === currentCat);
+            list = list.filter(f => f.name.toLowerCase().includes(q));
+            if(sort === "name") list.sort((a,b) => a.name.localeCompare(b.name));
+            else if(sort === "size") list.sort((a,b) => b.sizeRaw - a.sizeRaw);
+            else list.sort((a,b) => new Date(b.date) - new Date(a.date));
+            renderFiles(list);
         }
+
+        function logout() { localStorage.clear(); location.reload(); }
+
+        function toggleLoad(show, p, msg) {
+            document.getElementById('loader').style.display = show ? 'flex' : 'none';
+            document.getElementById('lBar').style.width = p + "%";
+            document.getElementById('lPercent').innerText = p + "%";
+            document.getElementById('lMsg').innerText = msg;
+        }
+        
+        
+        
+        // Automatic refresh every 30 seconds
+setInterval(() => {
+    if (userEmail && document.visibilityState === 'visible') {
+        console.log("Real-time Refreshing...");
+        loadFiles(); // Nayi files aur storage refresh karega
+    }
+}, 30000); // 30000ms = 30 seconds
     </script>
 </body>
 </html>
